@@ -8,7 +8,8 @@ namespace Build_Agent
         static void Main(string[] args)
         {
             var bot = new BuildingBot(@"D:\C# shared\Build Agent\Build Agent\", 10);
-            var bot1 = new BuildingBot(@"D:\C# shared\Build Agent\Build Agent\", 3);
+            Console.ReadKey();
+            bot.Terminate();
             Console.ReadKey();
         }
 

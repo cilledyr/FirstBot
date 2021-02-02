@@ -13,11 +13,13 @@ namespace Build_Agent
         private int Delay;
         private Boolean building = true;
         private Task t;
+        private CancellationTokenSource cts;
         public BuildingBot(string filePathName, int delay)
         {
             Filepath = filePathName;
             Delay = delay;
-            t = new Task(delegate { loopBuild(); });
+            cts = new CancellationTokenSource();
+            t = new Task(delegate { loopBuild(); }, cts.Token);
             t.Start();
         }
         public void doBuild()
@@ -39,16 +41,26 @@ namespace Build_Agent
 
         public void loopBuild()
         {
-            while(building)
+            while (building)
             {
                 doBuild();
-                Thread.Sleep(Delay * 1000);
+                try
+                {
+                    Task.Delay(Delay * 1000, cts.Token).Wait();
+                }
+                catch (Exception e)
+                {
+                    Console.Out.WriteLine(e);
+                }
+                
             }
+            
         }
 
-        public void setBuilding(Boolean isbuildingOn)
+        public void Terminate()
         {
-            building = isbuildingOn;
+            building = false;
+            cts.Cancel();
         }
     }
 }
